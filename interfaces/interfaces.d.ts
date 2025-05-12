@@ -1,10 +1,21 @@
 
 interface Bed{
-  id: number;
+  _id: number;
   name: string;
   macAddress: string;
   assigned: boolean;
-  title: string;
+  lastTemperature: number
 }
 
+interface BedDetails {
+  id: number,
+  temperature: number
+  
+}
 
+interface Alert {
+  _id: number,
+  bedId: number,
+  message: string;
+  date: number
+}

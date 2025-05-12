@@ -1,50 +1,143 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 export const Backend_CONFIG = {
-    BASE_URL: "http://127.0.0.1:3000/docs#/default/",
+    BASE_URL: "https://pressureulcer.onrender.com",
     headers: {
-      "Content-Type": "application/json",
+      accept: "application/json",
     },
   };
-//   http://127.0.0.1:3000/docs#/default/return_bed_get_beds_get
+
   export const TMDB_CONFIG = {
     BASE_URL: "https://api.themoviedb.org/3",
     API_KEY: process.env.EXPO_PUBLIC_MOVIE_API_KEY,
     headers: {
-      accept: "application/json",
+      accept: "*/*",
       Authorization: `Bearer ${process.env.EXPO_PUBLIC_MOVIE_API_KEY}`,
     },
   };
   
+  // export const fetchBed = async ({
+  //   query,
+  //   token
+  // }: {
+  //   query: string,
+  //   token: string;
+  // }): Promise<Bed[]> => {
+  //   const endpoint = `${Backend_CONFIG.BASE_URL}/api/beds/caregiver/{userid}`;
+  //   const response = await fetch(endpoint, {
+  //     method: "GET",
+  //     headers: Backend_CONFIG.headers,
+  //   });
+
+  //   console.log('Here')
+  //   if (!response.ok) {
+  //     throw new Error(`Failed to fetch beds: ${response.statusText}`);
+  //   }
+  //   const data = await response.json();
+  //   console.log(data)
+  //   return data;
+    
+  // };
+  
   export const fetchBed = async ({
-    query,
+    query, token
   }: {
     query: string;
+    token: string; // userId
   }): Promise<Bed[]> => {
-    console.log('Here')
-    const endpoint = `${TMDB_CONFIG.BASE_URL}/discover/movie?sort_by=popularity.desc`;
-      console.log('Here')
-    
-    // axios.
-    // get(endpoint).then((response)=>{
-    //     const res = response.data 
-    // })
-    // const response = await axios.get(endpoint);
-    // return response.data.results;
-
+    const endpoint = `${Backend_CONFIG.BASE_URL}/api/beds/caregiver/${query}`;    
     const response = await fetch(endpoint, {
       method: "GET",
-      headers: TMDB_CONFIG.headers,
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      }
     });
-
-    console.log('Here')
+  
     if (!response.ok) {
-      throw new Error(`Failed to fetch beds: ${response.statusText}`);
+      throw new Error("Failed to fetch beds");
     }
   
-    const data = await response.json();
-    
-    return data.results;
-    
+    return await response.json();
   };
   
+
+const api = axios.create({
+  baseURL: 'https://pressureulcer.onrender.com/api',
+  headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+});
+
+export default api;
+
+// export const fetchBedDetails = async (
+//   movieId: string
+// ): Promise<BedDetails> => {
+//   try {
+//     const response = await fetch(
+//       `${TMDB_CONFIG.BASE_URL}/movie/${movieId}?api_key=${TMDB_CONFIG.API_KEY}`,
+//       {
+//         method: "GET",
+//         headers: TMDB_CONFIG.headers,
+//       }
+//     );
+
+//     if (!response.ok) {
+//       throw new Error(`Failed to fetch movie details: ${response.statusText}`);
+//     }
+
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     console.error("Error fetching movie details:", error);
+//     throw error;
+//   }
+// };
+
+
+export const fetchAlerts = async ({
+  userId,
+  token
+}: {
+  userId: string;
+  token: string;
+}): Promise<Alert[]> => {
+  const endpoint = `${Backend_CONFIG.BASE_URL}/api/alerts/caregiver/${userId}`;
+
+  const response = await fetch(endpoint, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch alerts");
+  }
+
+  return await response.json();
+};
+
+export const fetchBedDetails = async (
+  macAddress: string
+): Promise<Bed> => {
+  const token = await AsyncStorage.getItem('token'); // ✅ Get token from storage
+
+  const endpoint = `${Backend_CONFIG.BASE_URL}/api/beds/${macAddress}/details`;
+
+  const response = await fetch(endpoint, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`, // ✅ Send token
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch bed details");
+  }
+
+  const json = await response.json()
+  return json.bed;
+};

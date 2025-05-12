@@ -8,7 +8,8 @@ const useFetch = <T>(fetchFunction: () => Promise<T>, autoFetch = true) => {
   const [fontsLoaded] = useFonts({
     "Nunito" : require('./../assets/fonts/Nunito-Medium.ttf'),
     "Roman" : require('./../assets/fonts/Romanesco-Regular.ttf'),
-    "Inter": require('./../assets/fonts/Inter-VariableFont_opsz,wght.ttf')
+    "Inter": require('./../assets/fonts/Inter-VariableFont_opsz,wght.ttf'),
+    "Nunito-Semi": require('./../assets/fonts/Nunito-SemiBold.ttf')
   })
 
   const fetchData = async () => {

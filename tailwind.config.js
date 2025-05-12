@@ -20,10 +20,9 @@ module.exports = {
         },
         accent: "#AB8BFF",
       },
-      fontFamily: {
-        nunito: ["Nunito", "sans-serif"],
-        title: ["Edu AU VIC WA NT Arrows", "cursive"]
-      }
+      textShadow: {
+        custom: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+      },
     },
   },
   plugins: [],

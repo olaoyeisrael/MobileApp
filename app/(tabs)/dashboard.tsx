@@ -2,7 +2,7 @@ import { View, Text, Image, ScrollView, FlatList, ActivityIndicator } from 'reac
 import { useFonts } from 'expo-font'
 import AppLoading from "expo-app-loading";
 
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { images } from '@/constants/images'
 import BedCard from '@/components/BedCard'
@@ -10,14 +10,46 @@ import { fetchBed } from '@/services/api'
 import useFetch from '@/services/useFetch'
 import { wp, hp } from '@/utils/dimensions'
 import * as SplashScreen from 'expo-splash-screen'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext, useAuth } from '@/context/authContext';
 
-const index = () => {
-  
+const dashboard = () => {
+  const [userId, setUserId] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [loadingUser, setLoadingUser] = useState(true);
+
+  useEffect(() => {
+    const loadUserId = async () => {
+      try {
+        const id = await AsyncStorage.getItem('userId');
+        const token = await AsyncStorage.getItem('token');
+        console.log("dashboard ",id)
+        if (id) setUserId(id);
+        if (token) setToken(token);
+      } catch (e) {
+        console.error('Error loading userId:', e);
+      } finally {
+        setLoadingUser(false);
+      }
+    };
+    loadUserId();
+  }, []);
+  console.log("userid", userId)
   const {
     data: bed,
     loading: bedLoading,
     error: bedError,
-  } = useFetch(() => fetchBed({ query: "" }));
+    refetch
+  } = useFetch(() => {
+    if (!userId || !token) return Promise.resolve([]);
+      return fetchBed({ query: userId, token });
+    
+  });
+  useEffect(() => {
+    if (userId && token) {
+      refetch(); 
+    }
+  }, [userId, token]);
 
 
   return (
@@ -31,7 +63,7 @@ const index = () => {
     <ScrollView className="flex-1 mx-auto" style={{width: wp(90), height: hp(72) }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ minHeight: "100%", paddingBottom: 50 }}> 
-        { bedLoading ? (
+        { bedLoading || loadingUser ? (
           <ActivityIndicator
             size="large"
             color="#0000ff"
@@ -42,7 +74,8 @@ const index = () => {
 
         <FlatList data={bed}
           renderItem={({ item }) => <BedCard {...item}  />}
-          keyExtractor={(item) => item.id.toString()}
+          
+          keyExtractor={(item) => item._id?.toString()}
           numColumns={2}
           columnWrapperStyle={{
           justifyContent: "flex-start",
@@ -64,7 +97,7 @@ const index = () => {
   )
 }
 
-export default index
+export default dashboard
 
 
 

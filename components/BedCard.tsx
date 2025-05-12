@@ -6,17 +6,15 @@ import { images } from "@/constants/images";
 import { wp, hp } from "@/utils/dimensions";
 
 const BedCard = ({
-  id,
+  _id,
   name,
   macAddress,
-  title,
 }: Bed) => {
   return (
-    // <View href={`/bed/${id}`} asChild>
-    <View>
+    <Link href={`/beds/${macAddress}`} asChild>
       <TouchableOpacity style={{width: wp(42)}} className="">
       <Text className="text-sm text-black mt-2 text-center" style={{fontFamily:"Nunito"}} numberOfLines={1}>
-          {title}
+          {name}
         </Text>
         <Image
           source={images.bedImage}
@@ -25,7 +23,7 @@ const BedCard = ({
         />
 
       </TouchableOpacity>
-    </View>
+    </Link>
   );
 };
 

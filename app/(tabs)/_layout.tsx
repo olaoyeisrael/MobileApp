@@ -53,9 +53,9 @@ const TabIcon = ({ focused, icon, title }: any)=> {
         }}
       >
         <Tabs.Screen
-          name="index"
+          name="dashboard"
           options={{
-            title: "index",
+            title: "dashboard",
             headerShown: false,
             tabBarIcon: ({ focused }) => (
               <TabIcon focused={focused} icon={icons.home} title="Dashboard" />
